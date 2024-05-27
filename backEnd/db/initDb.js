@@ -1,5 +1,4 @@
 require("dotenv").config();
-
 const getPool = require("./getPool");
 
 // Función que crea las tablas en la base de datos.
@@ -8,12 +7,6 @@ const createTables = async () => {
   const pool = await getPool();
 
   try {
-    console.log("Borrando tablas si existen...");
-
-    // Borrar tablas si existen
-    await pool.query("DROP TABLE IF EXISTS appointments");
-    await pool.query("DROP TABLE IF EXISTS users");
-
     console.log("Creando tablas...");
 
     // Crear tabla users
@@ -33,6 +26,7 @@ const createTables = async () => {
         id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
         user_id INT UNSIGNED NOT NULL,
         date DATETIME NOT NULL,
+        time TIME NOT NULL,
         status VARCHAR(50) DEFAULT 'scheduled',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(id)
