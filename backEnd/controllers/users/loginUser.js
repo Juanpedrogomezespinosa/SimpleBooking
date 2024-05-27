@@ -5,22 +5,22 @@ const generateError = require("../../utils/generateError");
 
 const loginUser = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { phone, password } = req.body;
 
     const pool = getPool();
 
-    const [[user]] = await pool.query("SELECT * FROM users WHERE email = ?", [
-      email,
+    const [[user]] = await pool.query("SELECT * FROM users WHERE phone = ?", [
+      phone,
     ]);
 
     if (!user) {
-      generateError("Email o contraseña incorrectos", 401);
+      throw generateError("Número de teléfono o contraseña incorrectos", 401);
     }
 
     const isPasswordOk = await bcrypt.compare(password, user.password);
 
     if (!isPasswordOk) {
-      generateError("Email o contraseña incorrectos", 401);
+      throw generateError("Número de teléfono o contraseña incorrectos", 401);
     }
 
     const tokenData = {

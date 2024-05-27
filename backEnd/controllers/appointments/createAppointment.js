@@ -1,11 +1,12 @@
+// createAppointment.js
+
 const getPool = require("../../db/getPool");
 const { validationResult } = require("express-validator");
 const generateError = require("../../utils/generateError");
 
-// Función para crear una cita.
 const createAppointment = async (req, res, next) => {
   try {
-    const { name, email, phone, date, time } = req.body;
+    const { name, phone, date, time } = req.body;
     const userId = req.userId; // Usar req.userId en lugar de req.auth.id
 
     const errors = validationResult(req);
@@ -105,8 +106,8 @@ const createAppointment = async (req, res, next) => {
 
     // Insertar una nueva cita en la base de datos.
     const [result] = await pool.query(
-      "INSERT INTO appointments (name, email, phone, date, user_id, time) VALUES (?, ?, ?, ?, ?, ?)",
-      [name, email, phone, `${date} ${time}`, userId, time]
+      "INSERT INTO appointments (name, phone, date, user_id, time) VALUES (?, ?, ?, ?, ?)",
+      [name, phone, `${date} ${time}`, userId, time]
     );
 
     const newAppointmentId = result.insertId;

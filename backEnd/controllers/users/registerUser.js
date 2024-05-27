@@ -1,21 +1,25 @@
-const getPool = require("../../db/getPool");
-const bcrypt = require("bcrypt");
-
 const registerUser = async (req, res, next) => {
   try {
-    const { name, email, password, phone } = req.body; // Agrega phone aquí
+    const { name, phone, password } = req.body;
     const pool = getPool();
-    const [users] = await pool.query("SELECT * FROM users WHERE email = ?", [
-      email,
+
+    // Verificar si el usuario ya existe
+    const [users] = await pool.query("SELECT * FROM users WHERE phone = ?", [
+      phone,
     ]);
     if (users.length > 0) {
-      throw new Error("Ya existe un usuario con ese email");
+      throw new Error("Ya existe un usuario con ese número de teléfono");
     }
+
+    // Hashear la contraseña
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Insertar el nuevo usuario en la base de datos
     await pool.query(
-      "INSERT INTO users (name, email, password, phone) VALUES (?, ?, ?, ?)",
-      [name, email, hashedPassword, phone]
+      "INSERT INTO users (name, phone, password) VALUES (?, ?, ?)",
+      [name, phone, hashedPassword]
     );
+
     res.status(201).send({ status: "ok", message: "Usuario creado" });
   } catch (error) {
     next(error);
